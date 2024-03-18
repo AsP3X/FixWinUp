@@ -13,15 +13,13 @@ cls
 :: Display Options
 echo 1. DISM /Online /Cleanup-Image /RestoreHealth
 echo 2. sfc /scannow
-echo 3. DISM and sfc "DISABLED"
+echo 3. Run both commands (DISM and sfc)
 echo 4. Close Script
 set /p option=Select an option:
 if %option%==1 call :Option_1
 if %option%==2 call :Option_2
-::if %option%==3 call :Option_3
+if %option%==3 call :Option_3
 if %option%==4 exit
-goto menu
-
 goto menu
 
 :: Define Functions for Each Option
@@ -30,21 +28,21 @@ echo Running DISM command...
 @REM cmd /c "DISM /Online /Cleanup-Image /RestoreHealth"
 cmd /c "dism /online /cleanup-image /restorehealth /LimitAccess"
 if %errorlevel% equ 0 (echo DISM command completed successfully.) else (echo An error occurred running the DISM command.)
-timeout /t 5 >nul
-goto menu
+goto menu_after_option
 
 :Option_2
 echo Running sfc command...
 cmd /c "sfc /scannow"
 if %errorlevel% equ 0 (echo sfc command completed successfully.) else (echo An error occurred running the sfc command.)
-timeout /t 5 >nul
-goto menu
+goto menu_after_option
 
 :Option_3
-echo Running DISM command...
+echo Running both commands (DISM and sfc)...
 call :Option_1
-echo Running sfc command...
 call :Option_2
-if %errorlevel% equ 0 (echo Both commands completed successfully.) else (echo An error occurred running one or both of the commands.)
+goto menu_after_option
+
+:menu_after_option
 timeout /t 5 >nul
+cls
 goto menu
